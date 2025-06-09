@@ -7,3 +7,8 @@ export function proxyFetch(
   path: string,
   opts?: { method?: string; headers?: Record<string, string>; body?: any }
 ): Promise<ProxyFetchResponse>;
+
+export function proxyFetchFetch(
+  url: string,
+  opts?: { method?: string; headers?: Record<string, string>; body?: any }
+): Promise<ProxyFetchResponse>;

@@ -1,12 +1,51 @@
-import React, { useCallback } from "react";
+import * as React from 'react';
 import MonacoEditor from "./CodeEditor";
 import Repl from "./Repl";
-import { proxyFetch } from "./pyodide_server/proxyFetch";
+import { proxyFetch, proxyFetchFetch } from "./pyodide_server/proxyFetch";
+
+
+defineBrowserFetchProxy();
+
+function headersToObject(headers: HeadersInit | undefined): Record<string, string> | undefined {
+  if (!headers) return undefined;
+  if (Array.isArray(headers)) {
+    return Object.fromEntries(headers);
+  } else if (headers instanceof Headers) {
+    const result: Record<string, string> = {};
+    headers.forEach((value, key) => {
+      result[key] = value;
+    });
+    return result;
+  } else {
+    // If it's already a plain object
+    return headers;
+  }
+}
+
+function defineBrowserFetchProxy() {
+  const globalObj = typeof window !== "undefined" ? window : self;
+  const realFetch: typeof fetch = globalObj.fetch.bind(globalObj);
+  globalObj.fetch = (async function(url: RequestInfo | URL, opts?: RequestInit): Promise<Response> {
+    // Only proxy fetches with path-only URLs (no host, starts with / but not //)
+    if (typeof url === 'string' && url.startsWith('/') && !url.startsWith('//')) {
+      const { headers, ...rest } = opts ?? {};
+      const normHeaders = headersToObject(headers);
+      const proxyResponse = await proxyFetchFetch(url, { ...rest, headers: normHeaders });
+      const responseHeaders = proxyResponse.headers ? Object.fromEntries(proxyResponse.headers) : undefined;
+      return new Response(proxyResponse.body, {
+        status: proxyResponse.status,
+        headers: responseHeaders,
+      });
+    }
+    return realFetch(url, opts);
+  }) as typeof fetch;
+}
 
 export default function App() {
-  const callPyodideServer = useCallback(async () => {
-    const resp = await proxyFetch("/hello", { method: "GET" });
-    alert(`FastAPI responded: ${resp.status} - ${resp.body}`);
+  const callPyodideServer = React.useCallback(async () => {
+    const resp = await fetch("/hello", { method: "GET", headers: {} });
+    const body = await resp.json();
+    alert(`FastAPI responded: ${resp.status} - ${body.msg}`);
   }, []);
 
   return (
