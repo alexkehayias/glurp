@@ -1,13 +1,17 @@
 import React, { useEffect, useRef } from "react";
 import * as monaco from "monaco-editor";
+import { useEval } from './EvalContext';
 
-const INITIAL_CODE = `# Type your Python code here!\nprint(\"Hello from Monaco!\")\n`;
+const INITIAL_CODE = `# Type your Python code here!\nprint("Hello from Monaco!")`;
 
 const CodeEditor: React.FC = () => {
   const editorRef = useRef<HTMLDivElement>(null);
-  // Only create editor once
+  const monacoEditorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
+  const { evalCode, output, error } = useEval();
+
   useEffect(() => {
     if (!editorRef.current) return;
+
     const editor = monaco.editor.create(editorRef.current, {
       value: INITIAL_CODE,
       language: "python",
@@ -17,12 +21,43 @@ const CodeEditor: React.FC = () => {
       fontSize: 15,
       minimap: { enabled: false },
     });
-    setTimeout(() => editor.layout(), 100); // Fallback for hydration/layout
-    // @ts-ignore
-    window.editor = editor; // for debugging
+
+    monacoEditorRef.current = editor;
+    setTimeout(() => editor.layout(), 100);
     return () => editor.dispose();
   }, []);
-  return <div ref={editorRef} className="w-full h-full min-h-0 min-w-0" />;
+
+  const handleRunCode = () => {
+    if (monacoEditorRef.current) {
+      evalCode(monacoEditorRef.current.getValue());
+    }
+  };
+
+  return (
+    <div className="w-full h-full min-h-0 min-w-0 relative">
+      <div ref={editorRef} className="w-full h-[calc(100%-40px)]" />
+      
+      {/* Output display */}
+      {(output || error) && (
+        <div className="absolute bottom-10 right-0 left-0 p-2 bg-gray-800 text-white overflow-auto max-h-[200px]">
+          {error ? (
+            <div className="text-red-400">{error}</div>
+          ) : (
+            <pre>{output}</pre>
+          )}
+        </div>
+      )}
+
+      <div className="absolute bottom-0 right-0 p-2">
+        <button
+          onClick={handleRunCode}
+          className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded"
+        >
+          ▶ Run
+        </button>
+      </div>
+    </div>
+  );
 };
 
 export default CodeEditor;

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import MonacoEditor from "./CodeEditor";
 import Repl from "./Repl";
+import { EvalProvider } from './EvalContext';
 import { proxyFetch, proxyFetchFetch } from "./pyodide_server/proxyFetch";
 
 
@@ -41,6 +42,8 @@ function defineBrowserFetchProxy() {
   }) as typeof fetch;
 }
 
+import { DashboardLayout } from "@/components/DashboardLayout";
+
 export default function App() {
   const callPyodideServer = React.useCallback(async () => {
     const resp = await fetch("/hello", { method: "GET", headers: {} });
@@ -49,17 +52,21 @@ export default function App() {
   }, []);
 
   return (
-    <div id="app-root" className="flex h-screen w-screen min-h-0 min-w-0">
-      <div id="monaco-root" className="flex flex-col flex-1 min-w-0 h-screen relative">
-        <MonacoEditor />
-        <button onClick={callPyodideServer}
-                className="absolute left-3 bottom-3 bg-green-700 hover:bg-green-600 text-white rounded px-3 py-1">
-          Call in-browser FastAPI: /hello
-        </button>
-      </div>
-      <div id="terminal-root" className="flex flex-col flex-1 min-w-0 h-screen relative">
-        <Repl />
-      </div>
-    </div>
+    <EvalProvider>
+      <DashboardLayout>
+        <div id="app-root" className="flex h-full min-h-0 min-w-0">
+          <div id="monaco-root" className="flex flex-col flex-1 min-w-0 relative">
+            <MonacoEditor />
+            <button onClick={callPyodideServer}
+                    className="absolute left-3 bottom-3 bg-green-700 hover:bg-green-600 text-white rounded px-3 py-1">
+              Call in-browser FastAPI: /hello
+            </button>
+          </div>
+          <div id="terminal-root" className="flex flex-col flex-1 min-w-0 relative">
+            <Repl />
+          </div>
+        </div>
+      </DashboardLayout>
+    </EvalProvider>
   );
 }

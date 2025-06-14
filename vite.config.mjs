@@ -17,6 +17,9 @@ export default defineConfig({
     tailwindcss(),
   ],
   resolve: {
-    extensions: ['.ts', '.tsx', '.js']
+    extensions: ['.ts', '.tsx', '.js'],
+    alias: {
+      '@': new URL('./src', import.meta.url).pathname,
+    }
   }
 });
