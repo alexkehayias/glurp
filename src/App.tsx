@@ -3,6 +3,7 @@ import MonacoEditor from "./CodeEditor";
 import Repl from "./Repl";
 import { EvalProvider } from './EvalContext';
 import { proxyFetch, proxyFetchFetch } from "./pyodide_server/proxyFetch";
+import { DashboardLayout } from "@/components/DashboardLayout";
 
 
 defineBrowserFetchProxy();
@@ -41,8 +42,6 @@ function defineBrowserFetchProxy() {
     return realFetch(url, opts);
   }) as typeof fetch;
 }
-
-import { DashboardLayout } from "@/components/DashboardLayout";
 
 export default function App() {
   const callPyodideServer = React.useCallback(async () => {
