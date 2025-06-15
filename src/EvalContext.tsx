@@ -28,17 +28,17 @@ export const EvalProvider: React.FC<{ children: React.ReactNode }> = ({
     const loadPyodide = async () => {
       try {
         // @ts-ignore - Load Pyodide from CDN
-        const pyodideMod: any = await import("https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.mjs");
+        const pyodideMod: any = await import("https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.mjs");
         const loadPyodide = pyodideMod.loadPyodide;
         const py = await loadPyodide({
-          indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.1/full/",
+          indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.7/full/",
         });
 
         // Load default packages
         await py.loadPackage("micropip");
         const micropip = py.pyimport("micropip");
         await micropip.install(["typing-extensions>=4.8.0"]);
-        await py.loadPackage(["ssl", "distutils", "setuptools"]);
+        await py.loadPackage(["ssl", "setuptools"]);
         await micropip.install(["fastapi"]);
 
         setPyodide(py);

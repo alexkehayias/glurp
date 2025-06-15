@@ -1,12 +1,12 @@
-importScripts("https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js");
+importScripts("https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js");
 
 let pyodideReadyPromise = (async () => {
-  self.pyodide = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.0/full/" });
+  self.pyodide = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.7/full/" });
   await self.pyodide.loadPackage(["micropip"]);
   await self.pyodide.runPythonAsync(`
     import micropip
     await micropip.install(["typing-extensions>=4.8.0"])
-    await micropip.install(["ssl", "distutils", "setuptools"])
+    await micropip.install(["ssl", "setuptools"])
     await micropip.install(["fastapi>=0.110.0"])
 
     from fastapi import FastAPI, Request
