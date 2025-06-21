@@ -4,7 +4,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={false}>
       <div className="flex flex-col h-screen w-screen">
         <div className="flex flex-1 min-h-0 min-w-0">
           <AppSidebar className="h-full" />
