@@ -30,9 +30,25 @@ export const EvalProvider: React.FC<{ children: React.ReactNode }> = ({
         // @ts-ignore - Load Pyodide from CDN
         const pyodideMod: any = await import("https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.mjs");
         const loadPyodide = pyodideMod.loadPyodide;
-        const py = await loadPyodide({
-          indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.7/full/",
-        });
+        const py = await loadPyodide();
+
+        // FIX: This only outputs the last line when there are
+        // multiple lines of text
+        py.setStdout(
+          {
+            batched: (msg: string) => {
+              console.log(`Stdout: ${msg}`);
+              setOutput(msg);
+            }
+          }
+        );
+        py.setStderr(
+          {
+            batched: (msg: string) => {
+              console.log(`Stderr: ${msg}`);
+              setError(msg);
+          } }
+        );
 
         // Load default packages
         await py.loadPackage("micropip");
@@ -62,16 +78,13 @@ export const EvalProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // Execute the code using Pyodide
       const result = await pyodide.runPythonAsync(code);
-      if (result !== undefined) {
+      if (result) {
         setOutput(result.toString());
-      } else {
-        // For REPL-style evaluation where output is handled separately
-        setOutput("Code executed successfully");
       }
     } catch (err) {
       // Handle Python exceptions
       const error = err as Error;
-      setError(`Python Error: ${error.message}`);
+      setError(`Error: ${error.message}`);
     }
   };
 
@@ -86,8 +99,10 @@ export const EvalProvider: React.FC<{ children: React.ReactNode }> = ({
       const result = await pyodide.runPythonAsync(command);
       setHistory(prev => [...prev, command]); // Add to history
 
-      if (result !== undefined) {
-        return result.toString();
+      if (result) {
+        const out = result.toString();
+        setOutput(out)
+        return out
       }
     } catch (err) {
       const error = err as Error;

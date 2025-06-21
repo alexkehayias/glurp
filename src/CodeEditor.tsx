@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import * as monaco from "monaco-editor";
 import { useEval } from '@/EvalContext';
-import deepSearchCode from '@/py/default.py?raw';
+import deepSearchCode from '@/py/tools/deep_search.py?raw';
 
 const INITIAL_CODE = deepSearchCode;
 
@@ -19,7 +19,7 @@ const CodeEditor: React.FC = () => {
       theme: "vs-dark",
       automaticLayout: true,
       fontFamily: "Fira Mono, Consolas, Menlo, monospace",
-      fontSize: 15,
+      fontSize: 14,
       minimap: { enabled: false },
     });
 
@@ -37,17 +37,6 @@ const CodeEditor: React.FC = () => {
   return (
     <div className="w-full h-full min-h-0 min-w-0 relative">
       <div ref={editorRef} className="w-full h-[calc(100%-40px)]" />
-
-      {/* Output display */}
-      {(output || error) && (
-        <div className="absolute bottom-10 right-0 left-0 p-2 bg-gray-800 text-white overflow-auto max-h-[200px]">
-          {error ? (
-            <div className="text-red-400">{error}</div>
-          ) : (
-            <pre>{output}</pre>
-          )}
-        </div>
-      )}
 
       <div className="absolute bottom-0 right-0 p-2">
         <button
