@@ -4,6 +4,7 @@ import Repl from "./Repl";
 import { EvalProvider } from './EvalContext';
 import { proxyFetch, proxyFetchFetch } from "./pyodide_server/proxyFetch";
 import { DashboardLayout } from "@/components/DashboardLayout";
+import { ThemeProvider } from "@/components/ui/theme-provider";
 
 
 defineBrowserFetchProxy();
@@ -52,6 +53,7 @@ export default function App() {
 
   return (
     <EvalProvider>
+      <ThemeProvider>
       <DashboardLayout>
         <div id="app-root" className="flex h-full min-h-0 min-w-0">
           <div id="monaco-root" className="flex flex-col flex-1 min-w-0 relative">
@@ -66,6 +68,7 @@ export default function App() {
           </div>
         </div>
       </DashboardLayout>
+    </ThemeProvider>
     </EvalProvider>
   );
 }
