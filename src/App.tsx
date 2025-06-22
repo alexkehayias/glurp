@@ -58,10 +58,6 @@ export default function App() {
         <div id="app-root" className="flex h-full min-h-0 min-w-0">
           <div id="monaco-root" className="flex flex-col flex-1 min-w-0 relative">
             <MonacoEditor />
-            <button onClick={callPyodideServer}
-                    className="absolute left-3 bottom-3 bg-green-700 hover:bg-green-600 text-white rounded px-3 py-1">
-              Call in-browser FastAPI: /hello
-            </button>
           </div>
           <div id="terminal-root" className="flex flex-col flex-1 min-w-0 relative">
             <Repl />

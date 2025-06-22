@@ -36,12 +36,12 @@ const CodeEditor: React.FC = () => {
 
   return (
     <div className="w-full h-full min-h-0 min-w-0 relative">
-      <div ref={editorRef} className="w-full h-[calc(100%-40px)]" />
+      <div ref={editorRef} className="w-full h-[calc(100%)]" />
 
-      <div className="absolute bottom-0 right-0 p-2">
+      <div className="absolute bottom-4 left-0 p-2">
         <button
           onClick={handleRunCode}
-          className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded"
+          className="bg-blue-600 hover:cursor-pointer hover:bg-blue-500 text-white px-3 py-1 rounded"
         >
           ▶ Run
         </button>
