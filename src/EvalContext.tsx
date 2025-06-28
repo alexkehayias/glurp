@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import secrets from '../config/secrets.toml?raw';
 
 interface EvalResult {
   output: string | null;
@@ -29,8 +30,21 @@ export const EvalProvider: React.FC<{ children: React.ReactNode }> = ({
       try {
         // @ts-ignore - Load Pyodide from CDN
         const pyodideMod: any = await import("https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.mjs");
-        const loadPyodide = pyodideMod.loadPyodide;
-        const py = await loadPyodide();
+        const py = await pyodideMod.loadPyodide();
+
+        await py.loadPackage("micropip");
+        const micropip = py.pyimport("micropip");
+
+        await micropip.install("toml");
+        // Create secrets module
+        const secretsModule = `
+import toml
+class Secrets(object):
+    pass
+for (k, v) in toml.loads('${secrets}').items():
+    setattr(Secrets, k, v)
+        `;
+        py.FS.writeFile("/home/pyodide/config.py", secretsModule);
 
         // FIX: This only outputs the last line when there are
         // multiple lines of text
@@ -51,14 +65,16 @@ export const EvalProvider: React.FC<{ children: React.ReactNode }> = ({
         );
 
         // Load default packages
-        await py.loadPackage("micropip");
-        const micropip = py.pyimport("micropip");
         await micropip.install(["typing-extensions>=4.8.0"]);
         await py.loadPackage(["ssl", "setuptools"]);
         await micropip.install(["fastapi"]);
 
         setPyodide(py);
         setPyodideReady(true);
+
+        // Attach the pyodide instance to `window` for easier
+        // debugging
+        (window as any).py = py
       } catch (err) {
         console.error("Failed to load Pyodide:", err);
       }
