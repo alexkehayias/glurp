@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import * as monaco from "monaco-editor";
 import { useEval } from '@/EvalContext';
-import deepSearchCode from '@/py/tools/deep_search.py?raw';
+import deepSearchCode from '@/py/agents/code_agent.py?raw';
 
 const INITIAL_CODE = deepSearchCode;
 

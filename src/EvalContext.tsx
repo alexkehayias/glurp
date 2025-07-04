@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import secrets from '../config/secrets.toml?raw';
+import replToolCode from '@/py/tools/repl.py?raw';
+import deepSearchToolCode from '@/py/tools/deep_search.py?raw';
 
 interface EvalResult {
   output: string | null;
@@ -27,24 +29,33 @@ export const EvalProvider: React.FC<{ children: React.ReactNode }> = ({
   // Load Pyodide when the provider mounts
   useEffect(() => {
     const loadPyodide = async () => {
-      try {
-        // @ts-ignore - Load Pyodide from CDN
-        const pyodideMod: any = await import("https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.mjs");
-        const py = await pyodideMod.loadPyodide();
+      // @ts-ignore - Load Pyodide from CDN
+      const pyodideMod: any = await import("https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.mjs");
+      const py = await pyodideMod.loadPyodide();
 
+      try {
         await py.loadPackage("micropip");
         const micropip = py.pyimport("micropip");
 
-        await micropip.install("toml");
         // Create secrets module
+        await micropip.install("toml");
         const secretsModule = `
 import toml
+DATA = """
+${secrets}
+"""
 class Secrets(object):
     pass
-for (k, v) in toml.loads('${secrets}').items():
+for (k, v) in toml.loads(DATA).items():
     setattr(Secrets, k, v)
         `;
         py.FS.writeFile("/home/pyodide/config.py", secretsModule);
+
+        // Create built-in tool modules
+        py.FS.mkdir("/home/pyodide/tools");
+        py.FS.writeFile("/home/pyodide/tools/__init__.py", "");
+        py.FS.writeFile("/home/pyodide/tools/repl.py", replToolCode);
+        py.FS.writeFile("/home/pyodide/tools/deep_search.py", deepSearchToolCode);
 
         // FIX: This only outputs the last line when there are
         // multiple lines of text
@@ -67,16 +78,16 @@ for (k, v) in toml.loads('${secrets}').items():
         // Load default packages
         await micropip.install(["typing-extensions>=4.8.0"]);
         await py.loadPackage(["ssl", "setuptools"]);
-        await micropip.install(["fastapi"]);
+        await micropip.install(["fastapi", "openai"]);
 
         setPyodide(py);
         setPyodideReady(true);
-
-        // Attach the pyodide instance to `window` for easier
-        // debugging
-        (window as any).py = py
       } catch (err) {
         console.error("Failed to load Pyodide:", err);
+      } finally {
+        // Attach the pyodide instance to `window` for easier
+        // debugging
+        (window as any).py = py;
       }
     };
 
