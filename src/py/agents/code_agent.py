@@ -10,7 +10,7 @@ TOOLS = [
         "type": "function",
         "function": {
             "name": "run_repl",
-            "description": "Execute code in a Python REPL environment",
+            "description": "Execute code in a Python REPL environment. The last expression is returned as the result. Do not use print to get the result.",
             "parameters": {
                 "type": "object",
                 "properties": {
