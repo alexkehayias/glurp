@@ -86,6 +86,9 @@ When you need to use a tool, the model will call it directly via function callin
         while tool_calls:
             for t in tool_calls:
                 tool_name = t.function.name
+                if not t.function.arguments:
+                    print(f"Tool call for {tool_name} missing arguments. Skipping...")
+                    continue
                 args = json.loads(t.function.arguments)
 
                 print(f"TOOL CALL: {tool_name}, {args}")
@@ -93,7 +96,7 @@ When you need to use a tool, the model will call it directly via function callin
                 # Execute the tool
                 if tool_name == "deep_search":
                     tool_response = await deep_search(args["query"])
-                if tool_name == "run_repl":
+                elif tool_name == "run_repl":
                     tool_response = await run_repl(args["code"])
                 else:
                     return f"Unknown tool: {tool_name}"
