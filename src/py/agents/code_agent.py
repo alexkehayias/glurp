@@ -60,7 +60,8 @@ class CodeAgent:
 You are a code assistant that can use tools to perform tasks.
 
 Available tools:
-- deep_search: For searching code patterns or documentation
+- deep_search: For searching the web for documentation, libraries, and tutorials
+- run_repl: For executing python code and returning the result
 
 When you need to use a tool, the model will call it directly via function calling.
 """
