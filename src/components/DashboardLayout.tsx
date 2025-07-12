@@ -16,15 +16,14 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     <SidebarProvider defaultOpen={false}>
       <div className="flex flex-col h-screen w-screen">
         <div className="flex flex-1 min-h-0 min-w-0">
-          { /* <AppSidebar className="h-full" /> */ }
+          <AppSidebar className="h-full" />
           <SidebarInset>
-            {/*
             <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
               <Breadcrumb>
                 <BreadcrumbList>
                   <BreadcrumbItem className="hidden md:block">
                     <BreadcrumbLink href="#">
-                      Workspace
+                      Playground
                     </BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbSeparator className="hidden md:block" />
@@ -33,8 +32,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
-</header>
-            */ }
+            </header>
             <div className="flex flex-1 flex-col gap-4">
               <main className="flex-1 min-h-0 min-w-0">{children}</main>
             </div>

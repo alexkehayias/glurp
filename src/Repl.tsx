@@ -98,7 +98,7 @@ const Repl: React.FC = () => {
   }, [pyodideReady]); // Only re-run if pyodide readiness changes
 
   return (
-    <div className="px-4 w-full h-full" style={{background: "#222"}}>
+    <div className="w-full h-full" style={{background: "#222"}}>
       <div
         ref={termRef}
         className="w-full h-full"
